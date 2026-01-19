@@ -1,16 +1,8 @@
-import os
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
-from pydantic_ai.providers.openai import OpenAIProvider
-
-provider = OpenAIProvider(
-    api_key=os.environ.get("OPENAI_API_KEY"),
-    openai_base_url="https://openrouter.ai/api/v1"
-)
 
 model = OpenAIModel(
-    model_name="mistralai/mistral-7b-instruct",
-    provider=provider
+    model_name="mistralai/mistral-7b-instruct"
 )
 
 agent = Agent(
