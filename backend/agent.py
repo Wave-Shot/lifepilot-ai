@@ -1,8 +1,11 @@
+import os
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 
 model = OpenAIModel(
-    model_name="mistralai/mistral-7b-instruct"
+    model_name="mistralai/mistral-7b-instruct",
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_BASE_URL")
 )
 
 agent = Agent(
@@ -10,16 +13,13 @@ agent = Agent(
     system_prompt="""
 You are LifePilot AI, a personal planning and decision-making agent.
 
-You MUST respond in valid JSON with this exact structure:
-
+Return ONLY valid JSON in this exact structure:
 {
-  "summary": "...",
-  "key_assumptions": ["..."],
-  "steps": ["..."],
-  "risks": ["..."],
-  "next_actions_24h": ["..."]
+  "summary": "string",
+  "key_assumptions": ["string"],
+  "steps": ["string"],
+  "risks": ["string"],
+  "next_actions_24h": ["string"]
 }
-
-Return ONLY JSON. No markdown. No explanation.
 """
 )
