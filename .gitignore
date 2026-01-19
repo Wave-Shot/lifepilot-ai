@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+backend/venv/
+
+# Environment variables
+.env
+
+# Streamlit
+.streamlit/
+
+# OS / Editor junk
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
