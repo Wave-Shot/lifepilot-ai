@@ -5,7 +5,7 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 provider = OpenAIProvider(
     api_key=os.environ.get("OPENAI_API_KEY"),
-    base_url=os.environ.get("OPENAI_BASE_URL")
+    openai_base_url="https://openrouter.ai/api/v1"
 )
 
 model = OpenAIModel(
