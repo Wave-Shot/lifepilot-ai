@@ -1,54 +1,56 @@
 import streamlit as st
 import requests
 
+API_URL = "https://lifepilot-ai.onrender.com/agent"
+
 st.set_page_config(
     page_title="LifePilot AI",
-    page_icon="🧠",
+    page_icon="🧭",
     layout="centered"
 )
 
-st.title("🧠 LifePilot AI")
-st.caption("A personal planning & decision-making AI agent")
-
-st.divider()
+st.title("🧭 LifePilot AI")
+st.subheader("Turn goals into clear, actionable plans")
 
 user_input = st.text_area(
-    "Describe your goal or problem",
-    placeholder="e.g. I want to balance gym, work, and learning AI without burning out",
+    "What do you want help planning?",
+    placeholder="e.g. Build a consistent routine for gym, work, and learning AI",
     height=120
 )
 
-if st.button("Generate Plan", use_container_width=True):
+if st.button("Generate Plan"):
     if not user_input.strip():
-        st.warning("Please describe your goal first.")
+        st.warning("Please enter a goal or problem.")
     else:
         with st.spinner("Thinking..."):
-            try:
-                response = requests.post(
-                    "http://127.0.0.1:8000/agent",
-                    json={"message": user_input},
-                    timeout=60
-                )
+            response = requests.post(
+                API_URL,
+                json={"message": user_input},
+                timeout=60
+            )
 
-                if response.status_code != 200:
-                    st.error("Agent failed. Please try again.")
-                else:
-                    data = response.json()
+        if response.status_code != 200:
+            st.error(f"Error {response.status_code}: {response.text}")
+        else:
+            data = response.json()
 
-                    st.subheader("Summary")
-                    st.write(data["summary"])
+            st.success("Plan generated")
 
-                    st.subheader("Steps")
-                    for step in data["steps"]:
-                        st.write(f"- {step}")
+            st.markdown("### Summary")
+            st.write(data["summary"])
 
-                    st.subheader("Risks")
-                    for risk in data["risks"]:
-                        st.write(f"- {risk}")
+            st.markdown("### Key Assumptions")
+            for item in data["key_assumptions"]:
+                st.write("•", item)
 
-                    st.subheader("Next 24 Hours")
-                    for action in data["next_actions_24h"]:
-                        st.write(f"- {action}")
+            st.markdown("### Steps")
+            for step in data["steps"]:
+                st.write("•", step)
 
-            except Exception as e:
-                st.error(str(e))
+            st.markdown("### Risks")
+            for risk in data["risks"]:
+                st.write("•", risk)
+
+            st.markdown("### Next Actions (24h)")
+            for action in data["next_actions_24h"]:
+                st.write("•", action)
