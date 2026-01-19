@@ -1,11 +1,16 @@
 import os
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.providers.openai import OpenAIProvider
+
+provider = OpenAIProvider(
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    base_url=os.environ.get("OPENAI_BASE_URL")
+)
 
 model = OpenAIModel(
     model_name="mistralai/mistral-7b-instruct",
-    api_key=os.environ.get("OPENAI_API_KEY"),
-    base_url=os.environ.get("OPENAI_BASE_URL")
+    provider=provider
 )
 
 agent = Agent(
