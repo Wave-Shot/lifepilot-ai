@@ -1,59 +1,49 @@
 import streamlit as st
 import requests
 
-BACKEND_URL = "https://lifepilot-ai.onrender.com/agent"
+st.set_page_config(page_title="LifePilot AI", page_icon="🧭")
 
-st.set_page_config(
-    page_title="LifePilot AI",
-    page_icon="🧠",
-    layout="centered"
+st.title("🧭 LifePilot AI")
+st.subheader("Your personal AI agent for routines and life planning")
+
+message = st.text_area(
+    "Describe your goal or problem",
+    placeholder="I want to build a consistent routine for gym, work, and learning AI"
 )
 
-st.title("🧠 LifePilot AI")
-st.subheader("Your personal AI agent for routines & planning")
-
-user_input = st.text_area(
-    "What do you want help with?",
-    placeholder="Example: Build a consistent routine for gym, work, and learning AI"
-)
-
-if st.button("Generate Plan"):
-    if not user_input.strip():
-        st.warning("Please enter a message")
+if st.button("Run Agent"):
+    if not message.strip():
+        st.error("Please enter a message")
     else:
         with st.spinner("Thinking..."):
-            try:
-                response = requests.post(
-                    BACKEND_URL,
-                    json={"message": user_input},
-                    timeout=30
-                )
+            response = requests.post(
+                "https://lifepilot-ai.onrender.com/agent",
+                json={"message": message},
+                timeout=60
+            )
 
-                if response.status_code != 200:
-                    st.error(f"Backend error: {response.text}")
-                else:
-                    data = response.json()
+            if response.status_code == 200:
+                data = response.json()
+                st.success("Agent Response")
 
-                    st.success("Plan generated!")
+                st.markdown("### Summary")
+                st.write(data.get("summary", ""))
 
-                    st.markdown("### 📝 Summary")
-                    st.write(data.get("summary", ""))
+                st.markdown("### Assumptions")
+                for a in data.get("key_assumptions", []):
+                    st.write("- " + a)
 
-                    st.markdown("### 🔑 Key Assumptions")
-                    for item in data.get("key_assumptions", []):
-                        st.write("- ", item)
+                st.markdown("### Steps")
+                for s in data.get("steps", []):
+                    st.write("- " + s)
 
-                    st.markdown("### 🧩 Steps")
-                    for step in data.get("steps", []):
-                        st.write("- ", step)
+                st.markdown("### Risks")
+                for r in data.get("risks", []):
+                    st.write("- " + r)
 
-                    st.markdown("### ⚠️ Risks")
-                    for risk in data.get("risks", []):
-                        st.write("- ", risk)
-
-                    st.markdown("### 🚀 Next Actions (24h)")
-                    for action in data.get("next_actions_24h", []):
-                        st.write("- ", action)
-
-            except requests.exceptions.RequestException as e:
-                st.error(f"Request failed: {e}")
+                st.markdown("### Next Actions (24h)")
+                for n in data.get("next_actions_24h", []):
+                    st.write("- " + n)
+            else:
+                st.error("Backend error")
+                st.code(response.text)
